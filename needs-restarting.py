@@ -234,7 +234,7 @@ def init_hook(conduit):
 
 	excludeLength = len(exclude)
 	
-	if excludeLength > 0:
+	if excludeLength > 1:
 		print "You blacklisted (%s Elements):" % (excludeLength-1)
 		for hit in exclude:
 			print hit
