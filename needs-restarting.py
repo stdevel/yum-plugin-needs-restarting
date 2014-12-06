@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/bin/env python
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -171,18 +171,18 @@ def main(args):
                         break
 
     #removing blacklisted procs
-    removeMeh=set()
+    removeMe = set()
     for pid in needing_restart:
         try:
-            cmdline = open('/proc/' +pid+ '/cmdline', 'r').read()
+            cmdline = open('/proc/' + pid + '/cmdline', 'r').read()
         except (OSError, IOError), e:
             print "Couldn't access process information for %s: %s" % (pid, str(e))
             continue
         matches=[s for s in exclude if s in cmdline]
         if len(matches) != 0 and len(matches[0]) > 0:
 		#print "I'd like to remove PID #"+pid
-		removeMeh.add(pid)
-    needing_restart = set(needing_restart) - set(removeMeh)
+		removeMe.add(pid)
+    needing_restart = set(needing_restart) - set(removeMe)
     
     if len(needing_restart) > 0:
 	print "You might want to restart the following processes:"
@@ -223,7 +223,7 @@ class NeedsRestartingCommand:
 def config_hook(conduit):
 	'''
 	Yum Plugin Config Hook: 
-	And the 'needs-restarting' command.
+	Add the 'needs-restarting' command.
 	'''
 	conduit.registerCommand(NeedsRestartingCommand())
 	
@@ -231,9 +231,11 @@ def init_hook(conduit):
 	global exclude
 	conduit_conf = conduit.getConf()
 	exclude = str(conduit.confString('main', 'excludeProcs', conduit_conf.exclude)).split(",")
-	#print excludes
-	if len(exclude) > 0:
-		print "You blacklisted:"
+
+	excludeLength = len(exclude)
+	
+	if excludeLength > 0:
+		print "You blacklisted (%s Elements):" % (excludeLength-1)
 		for hit in exclude:
 			print hit
 	print ""
